@@ -99,7 +99,9 @@
   <h2 class="section-title">Browse the library</h2>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
     <div id="diff-chips" style="display:flex;gap:6px;"></div>
+    <button class="chip" id="family-chip" onclick="toggleFamily()" title="Skills good for doing with younger family / Hannah">👨‍👧 Family-friendly</button>
     <button class="btn btn-quiet" onclick="addCustomSkill()" style="margin-left:auto;">+ Add custom skill</button>
+    <button class="btn btn-quiet" onclick="shareMastered()" title="Share your mastered skills as a list">Share my list</button>
   </div>
   <div id="grid"></div>
 
@@ -111,7 +113,7 @@
 
 <script>
 const SKILLS = [
-  { id: 'pressure-fan', name: 'Pressure fan (card flourish)', desc: 'Spread a deck into a perfect fan with one hand. The classic intro to card magic.', time: '10 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=pressure+fan+tutorial' },
+  { id: 'pressure-fan', name: 'Pressure fan (card flourish)', desc: 'Spread a deck into a perfect fan with one hand. The classic intro to card magic.', time: '10 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=pressure+fan+tutorial' },
   { id: 'charlier-cut', name: 'Charlier cut', desc: 'A one-handed card cut. Hours of fidget value once you have it down.', time: '15 min', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=charlier+cut+tutorial' },
   { id: 'thumb-fan', name: 'Thumb fan', desc: 'A more elegant card fan than the pressure version. Magicians use this constantly.', time: '20 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=thumb+fan+cards' },
   { id: 'bowline', name: 'Bowline knot', desc: 'The most useful knot ever invented. Holds a loop that won\\'t slip. Saves lives.', time: '10 min', difficulty: 'easy', tutorial: 'https://www.animatedknots.com/bowline-knot' },
@@ -122,25 +124,25 @@ const SKILLS = [
   { id: 'finger-whistle', name: 'Whistle with fingers', desc: 'The piercing 2-finger whistle that cuts through any crowd.', time: '1 hour (mostly frustration)', difficulty: 'hard', tutorial: 'https://www.youtube.com/results?search_query=how+to+whistle+with+fingers' },
   { id: 'thumb-around', name: 'Pen-spinning thumbaround', desc: 'Spin a pen 360° around your thumb. The classic high-school move.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=thumb+around+pen+spin' },
   { id: 'staff-figure-8', name: 'Bo staff: figure-8 spin', desc: 'The infinity spin in front of your body. Foundation for all staff flow.', time: '1 week', difficulty: 'hard', tutorial: 'https://www.youtube.com/results?search_query=bo+staff+figure+8+beginner' },
-  { id: 'yoyo-walk-dog', name: 'Yo-yo: walk the dog', desc: 'Send a spinning yo-yo across the floor like a leashed dog. First yo-yo trick.', time: '10 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=walk+the+dog+yoyo' },
+  { id: 'yoyo-walk-dog', name: 'Yo-yo: walk the dog', desc: 'Send a spinning yo-yo across the floor like a leashed dog. First yo-yo trick.', time: '10 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=walk+the+dog+yoyo' },
   { id: 'yoyo-rock-cradle', name: 'Yo-yo: rock the cradle', desc: 'Form a string triangle and rock the spinning yo-yo through it.', time: '30 min', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=rock+the+cradle+yoyo' },
-  { id: 'origami-crane', name: 'Origami crane', desc: 'Japan\\'s symbol of peace and a wedding gift, folded from one square.', time: '30 min', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=origami+crane+instructions' },
+  { id: 'origami-crane', name: 'Origami crane', desc: 'Japan\\'s symbol of peace and a wedding gift, folded from one square.', time: '30 min', difficulty: 'medium', family: true, tutorial: 'https://www.youtube.com/results?search_query=origami+crane+instructions' },
   { id: 'kickdrum-beatbox', name: 'Beatbox: classic kick drum', desc: 'The boom that anchors every beat. \\'B\\' sound through closed lips.', time: '30 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=beatbox+kick+drum+tutorial' },
   { id: 'snare-roll', name: 'Beatbox: snare roll', desc: 'The classic snap sound. Combine with kick drum and you have a basic loop.', time: '1 hour', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=beatbox+snare+tutorial' },
   { id: 'french-drop', name: 'Magic: French drop', desc: 'A coin (or anything small) vanishes from your hand. The first sleight everyone learns.', time: '30 min', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=french+drop+coin+tutorial' },
   { id: 'thumb-tip', name: 'Magic: thumb-tip vanish', desc: 'Make a silk handkerchief disappear with a $3 prop. Pro magicians still use this.', time: '1 hour', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=thumb+tip+routine' },
   { id: 'memory-palace', name: 'Memory palace technique', desc: 'Memorize a 30-item list by walking through a familiar place in your mind. Ancient mnemonic.', time: '1 day', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=memory+palace+technique+beginner' },
-  { id: 'rubiks-cube', name: 'Solve a Rubik\\'s cube', desc: 'Beginner method. Sub-2-minute solve achievable in a week.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=rubiks+cube+beginner+method' },
-  { id: 'cup-stacking', name: 'Speed cup stacking — 3-3-3', desc: 'Stack 3 pyramids of 3 cups and un-stack faster than you think.', time: '30 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=speed+stacking+3+3+3' },
-  { id: 'sign-alphabet', name: 'American Sign Language alphabet', desc: 'Fingerspell A-Z. Foundation for any further ASL.', time: '1 hour', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=asl+alphabet+tutorial' },
+  { id: 'rubiks-cube', name: 'Solve a Rubik\\'s cube', desc: 'Beginner method. Sub-2-minute solve achievable in a week.', time: '1 week', difficulty: 'medium', family: true, tutorial: 'https://www.youtube.com/results?search_query=rubiks+cube+beginner+method' },
+  { id: 'cup-stacking', name: 'Speed cup stacking — 3-3-3', desc: 'Stack 3 pyramids of 3 cups and un-stack faster than you think.', time: '30 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=speed+stacking+3+3+3' },
+  { id: 'sign-alphabet', name: 'American Sign Language alphabet', desc: 'Fingerspell A-Z. Foundation for any further ASL.', time: '1 hour', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=asl+alphabet+tutorial' },
   { id: 'tongue-twisters', name: 'Master 3 tongue twisters', desc: 'Pad-thai pita / Toy boat / Red leather. Diction and confidence on demand.', time: '1 hour', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=hardest+tongue+twisters' },
   { id: 'mental-math-squares', name: 'Mental math: 2-digit squares', desc: 'Square any 2-digit number in your head in under 5 seconds.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=mental+math+squaring+two+digit' },
   { id: 'calligraphy-italic', name: 'Italic calligraphy alphabet', desc: 'One pen, one alphabet. Write things people screenshot.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=italic+calligraphy+beginner' },
   { id: 'kendama-spike', name: 'Kendama: cup + spike', desc: 'The Japanese skill toy. Big cup → small cup → spike combo.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=kendama+beginner+tricks' },
   { id: 'basketball-spin', name: 'Spin a basketball on your finger', desc: 'Classic playground move. Sustain it for 30 seconds.', time: '1 hour', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=spin+basketball+finger+tutorial' },
   { id: 'whistle-warble', name: 'Whistle: warble (vibrato)', desc: 'Hold a single note and add a smooth vibrato. Sounds professional fast.', time: '1 hour', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=whistling+vibrato' },
-  { id: 'morse-distress', name: 'Memorize Morse code for SOS', desc: 'Three dots three dashes three dots. Could save someone\\'s life. Five-min skill, lifetime ROI.', time: '5 min', difficulty: 'easy', tutorial: 'https://en.wikipedia.org/wiki/SOS' },
-  { id: 'cpr-cycle', name: 'Memorize the CPR compression cycle', desc: '30 compressions, 2 breaths, repeat. Hands-only is fine. Lifetime skill.', time: '15 min', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=hands+only+cpr+american+heart' },
+  { id: 'morse-distress', name: 'Memorize Morse code for SOS', desc: 'Three dots three dashes three dots. Could save someone\\'s life. Five-min skill, lifetime ROI.', time: '5 min', difficulty: 'easy', family: true, tutorial: 'https://en.wikipedia.org/wiki/SOS' },
+  { id: 'cpr-cycle', name: 'Memorize the CPR compression cycle', desc: '30 compressions, 2 breaths, repeat. Hands-only is fine. Lifetime skill.', time: '15 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=hands+only+cpr+american+heart' },
   { id: 'guitar-chords', name: 'Learn 4 guitar chords (G/C/D/Em)', desc: 'These 4 chords unlock thousands of songs. One evening of practice.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=g+c+d+em+chords+guitar+beginner' },
   { id: 'rapid-typing', name: 'Touch-type to 60 wpm', desc: 'If you hunt-and-peck, the 2-week investment to type properly returns forever.', time: '2 weeks', difficulty: 'medium', tutorial: 'https://www.keybr.com/' },
 ];
@@ -156,6 +158,35 @@ state.weekly = state.weekly || {}; // { isoWeek: skillId }
 state.skipped = state.skipped || []; // ids skipped this week
 state.custom = state.custom || []; // user-added skills
 state.diffFilter = state.diffFilter || 'all'; // 'all' | 'easy' | 'medium' | 'hard'
+state.familyOnly = state.familyOnly || false;
+
+window.toggleFamily = () => {
+  state.familyOnly = !state.familyOnly;
+  saveState(state);
+  render();
+};
+
+window.shareMastered = async () => {
+  if (state.mastered.length === 0) {
+    alert('No mastered skills yet. Come back when you\\'ve learned a few.');
+    return;
+  }
+  const list = state.mastered
+    .map(m => allSkills().find(s => s.id === m.id))
+    .filter(Boolean)
+    .map(s => `• ${s.name}`)
+    .join('\\n');
+  const text = `Skills I\\'ve learned via Weekly Skill (${state.mastered.length}):\\n\\n${list}\\n\\nTry it: https://thebigjah.github.io/weekly-skill/`;
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch {}
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Copied to clipboard.');
+  } catch {
+    prompt('Copy:', text);
+  }
+};
 
 function allSkills() {
   const userSkills = state.custom.map(s => ({ ...s, isCustom: true }));
@@ -288,10 +319,18 @@ function renderGrid() {
     <button class="chip ${state.diffFilter === d ? 'on' : ''}" onclick="setDiff('${d}')">${d === 'all' ? 'all' : d}</button>
   `).join('');
 
+  // Sync the family chip styling
+  const famChip = document.getElementById('family-chip');
+  if (famChip) {
+    if (state.familyOnly) famChip.classList.add('on');
+    else famChip.classList.remove('on');
+  }
+
   const grid = document.getElementById('grid');
   const thisWeekId = state.weekly[isoWeek()];
   let list = allSkills().filter(s => !isMastered(s.id) && s.id !== thisWeekId);
   if (state.diffFilter !== 'all') list = list.filter(s => s.difficulty === state.diffFilter);
+  if (state.familyOnly) list = list.filter(s => s.family);
   grid.innerHTML = list.map(s => `
     <div class="card" onclick="makeThisWeek('${s.id}')">
       <h3 class="card-name">${escapeHtml(s.name)}${s.isCustom ? ' <span class="custom-tag">CUSTOM</span>' : ''}</h3>
