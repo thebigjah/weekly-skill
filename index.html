@@ -80,6 +80,10 @@
     font-size: 13px;
   }
   .link:hover { border-color: var(--accent); }
+  .chip { padding: 6px 12px; border-radius: 999px; background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); font-size: 12px; cursor: pointer; font-family: inherit; }
+  .chip.on { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+  .chip:hover { border-color: var(--accent); }
+  .custom-tag { display: inline-block; font-size: 9px; color: var(--accent); margin-left: 4px; padding: 1px 6px; border: 1px solid var(--accent); border-radius: 4px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -93,7 +97,10 @@
   <div id="this-week"></div>
 
   <h2 class="section-title">Browse the library</h2>
-  <p style="margin:0 0 14px;color:var(--text-light);font-size:13px;">${"<!-- placeholder -->"}</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+    <div id="diff-chips" style="display:flex;gap:6px;"></div>
+    <button class="btn btn-quiet" onclick="addCustomSkill()" style="margin-left:auto;">+ Add custom skill</button>
+  </div>
   <div id="grid"></div>
 
   <h2 class="section-title" id="mastered-title" style="display:none;">Mastered <span style="font-size:14px;color:var(--text-light);font-family:Inter,sans-serif;">— skills you've added to your collection</span></h2>
@@ -147,6 +154,41 @@ const state = loadState();
 state.mastered = state.mastered || []; // [{id, ts}]
 state.weekly = state.weekly || {}; // { isoWeek: skillId }
 state.skipped = state.skipped || []; // ids skipped this week
+state.custom = state.custom || []; // user-added skills
+state.diffFilter = state.diffFilter || 'all'; // 'all' | 'easy' | 'medium' | 'hard'
+
+function allSkills() {
+  const userSkills = state.custom.map(s => ({ ...s, isCustom: true }));
+  return [...SKILLS, ...userSkills];
+}
+
+window.addCustomSkill = () => {
+  const name = prompt('Skill name (e.g. "Solve a Sudoku"):');
+  if (!name || !name.trim()) return;
+  const desc = prompt('One-line description:') || '';
+  const time = prompt('Time to learn (e.g. "1 hour", "1 week"):') || '?';
+  const difficulty = (prompt('Difficulty (easy/medium/hard):') || 'medium').toLowerCase();
+  const tutorial = prompt('Tutorial URL (optional):') || `https://www.youtube.com/results?search_query=${encodeURIComponent(name + ' tutorial')}`;
+  const finalDiff = ['easy','medium','hard'].includes(difficulty) ? difficulty : 'medium';
+  const skill = {
+    id: 'c_' + Date.now().toString(36),
+    name: name.trim(),
+    desc: desc.trim(),
+    time: time.trim(),
+    difficulty: finalDiff,
+    tutorial: tutorial.trim(),
+  };
+  state.custom.push(skill);
+  saveState(state);
+  render();
+};
+window.removeCustomSkill = (id) => {
+  if (!confirm('Remove this custom skill?')) return;
+  state.custom = state.custom.filter(s => s.id !== id);
+  state.mastered = state.mastered.filter(m => m.id !== id);
+  saveState(state);
+  render();
+};
 
 function isoWeek(d = new Date()) {
   const date = new Date(d.getTime());
@@ -160,7 +202,7 @@ function getMasteredIds() { return state.mastered.map(m => m.id); }
 function isMastered(id) { return getMasteredIds().includes(id); }
 
 function pickRandomUnmastered(exclude = []) {
-  const pool = SKILLS.filter(s => !isMastered(s.id) && !exclude.includes(s.id));
+  const pool = allSkills().filter(s => !isMastered(s.id) && !exclude.includes(s.id));
   if (pool.length === 0) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -168,7 +210,10 @@ function pickRandomUnmastered(exclude = []) {
 function getThisWeekSkill() {
   const week = isoWeek();
   let id = state.weekly[week];
-  if (id && SKILLS.find(s => s.id === id)) return SKILLS.find(s => s.id === id);
+  if (id) {
+    const found = allSkills().find(s => s.id === id);
+    if (found) return found;
+  }
   // Pick a new one
   const picked = pickRandomUnmastered();
   if (!picked) return null;
@@ -237,20 +282,34 @@ window.makeThisWeek = (id) => {
 };
 
 function renderGrid() {
+  // difficulty chips
+  const chips = document.getElementById('diff-chips');
+  chips.innerHTML = ['all','easy','medium','hard'].map(d => `
+    <button class="chip ${state.diffFilter === d ? 'on' : ''}" onclick="setDiff('${d}')">${d === 'all' ? 'all' : d}</button>
+  `).join('');
+
   const grid = document.getElementById('grid');
   const thisWeekId = state.weekly[isoWeek()];
-  const list = SKILLS.filter(s => !isMastered(s.id) && s.id !== thisWeekId);
+  let list = allSkills().filter(s => !isMastered(s.id) && s.id !== thisWeekId);
+  if (state.diffFilter !== 'all') list = list.filter(s => s.difficulty === state.diffFilter);
   grid.innerHTML = list.map(s => `
     <div class="card" onclick="makeThisWeek('${s.id}')">
-      <h3 class="card-name">${escapeHtml(s.name)}</h3>
+      <h3 class="card-name">${escapeHtml(s.name)}${s.isCustom ? ' <span class="custom-tag">CUSTOM</span>' : ''}</h3>
       <p class="card-desc">${escapeHtml(s.desc)}</p>
       <div class="card-meta">
         <span class="badge ${s.difficulty}">${s.difficulty}</span>
         <span>⏱ ${escapeHtml(s.time)}</span>
+        ${s.isCustom ? `<button class="btn btn-quiet" onclick="event.stopPropagation();removeCustomSkill('${s.id}')" style="margin-left:auto;font-size:10px;padding:2px 6px;">×</button>` : ''}
       </div>
     </div>
-  `).join('') || '<div class="empty">Nothing left to learn here. Add custom ideas in a future version.</div>';
+  `).join('') || `<div class="empty">No ${state.diffFilter === 'all' ? '' : state.diffFilter + ' '}skills left. ${state.diffFilter !== 'all' ? 'Try a different filter or ' : ''}add custom ideas with + Add custom skill.</div>`;
 }
+
+window.setDiff = (d) => {
+  state.diffFilter = d;
+  saveState(state);
+  renderGrid();
+};
 
 function renderMastered() {
   const grid = document.getElementById('mastered-grid');
