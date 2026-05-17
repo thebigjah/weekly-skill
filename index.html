@@ -264,6 +264,15 @@ function getThisWeekSkill() {
   return picked;
 }
 
+function getPacingHint() {
+  const totalUnmastered = allSkills().filter(s => !isMastered(s.id)).length;
+  const weeksLeft = totalUnmastered;
+  if (weeksLeft === 0) return 'You\\'ve learned them all. Add custom skills to keep going.';
+  if (weeksLeft < 10) return `Only ${weeksLeft} weeks of new skills left at this pace. Add some custom ones.`;
+  if (weeksLeft < 30) return `${weeksLeft} weeks of skills queued.`;
+  return `${weeksLeft} weeks of skills queued — basically a year of learning.`;
+}
+
 function renderThisWeek() {
   const el = document.getElementById('this-week');
   const skill = getThisWeekSkill();
@@ -285,6 +294,7 @@ function renderThisWeek() {
         <button class="btn btn-good" onclick="markLearned('${skill.id}')">I learned it ✓</button>
         <button class="btn btn-ghost" onclick="skipWeekly('${skill.id}')">Skip — pick another</button>
       </div>
+      <p style="margin:14px 0 0;font-size:12px;color:var(--text-light);">${escapeHtml(getPacingHint())}</p>
     </div>
   `;
 }
