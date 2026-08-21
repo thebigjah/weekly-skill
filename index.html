@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Weekly Skill, one new fun thing to learn this week | Elijah Purcell</title>
 <meta name="description" content="A new fun skill each week: card flourishes, knots, juggling, beatbox, magic. Track what stuck. By Elijah Purcell, Purcell Ventures LLC.">
-<meta property="og:title" content="Weekly Skill — one new fun thing to learn this week">
+<meta property="og:title" content="Weekly Skill, one new fun thing to learn this week">
 <meta property="og:description" content="A new fun skill each week: card flourishes, knots, juggling, beatbox, magic. Track what stuck. By Elijah Purcell, Purcell Ventures LLC.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://thebigjah.github.io/weekly-skill/">
@@ -310,7 +310,7 @@
   <p class="kicker">One new fun thing to learn this week</p>
   <h1 class="title">Weekly Skill</h1>
   <p class="lead">
-    The world is full of small, surprising skills no one teaches anymore — how to throw a card, tie a bowline, spin a staff, palm a coin. One per week. Pick one. Learn it. Move on.
+    The world is full of small, surprising skills no one teaches anymore, how to throw a card, tie a bowline, spin a staff, palm a coin. One per week. Pick one. Learn it. Move on.
   </p>
 
   <div id="this-week"></div>
@@ -324,11 +324,11 @@
   </div>
   <div id="grid"></div>
 
-  <h2 class="section-title" id="mastered-title" style="display:none;">Mastered <span style="font-size:14px;color:var(--text-light);font-family:Inter,sans-serif;">— skills you've added to your collection</span></h2>
+  <h2 class="section-title" id="mastered-title" style="display:none;">Mastered <span style="font-size:14px;color:var(--text-light);font-family:Inter,sans-serif;">, skills you've added to your collection</span></h2>
   <div id="mastered-grid"></div>
 
   <p class="footer-note">Weekly Skill v0.1 · auto-picks a new skill every Monday · saves to your browser
-    <span class="credit-line">— PURCELLVENTURES.CO —</span></p>
+    <span class="credit-line">, PURCELLVENTURES.CO,</span></p>
 </main>
 
 <script>
@@ -353,7 +353,7 @@ const SKILLS = [
   { id: 'thumb-tip', name: 'Magic: thumb-tip vanish', desc: 'Make a silk handkerchief disappear with a $3 prop. Pro magicians still use this.', time: '1 hour', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=thumb+tip+routine' },
   { id: 'memory-palace', name: 'Memory palace technique', desc: 'Memorize a 30-item list by walking through a familiar place in your mind. Ancient mnemonic.', time: '1 day', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=memory+palace+technique+beginner' },
   { id: 'rubiks-cube', name: 'Solve a Rubik\\'s cube', desc: 'Beginner method. Sub-2-minute solve achievable in a week.', time: '1 week', difficulty: 'medium', family: true, tutorial: 'https://www.youtube.com/results?search_query=rubiks+cube+beginner+method' },
-  { id: 'cup-stacking', name: 'Speed cup stacking — 3-3-3', desc: 'Stack 3 pyramids of 3 cups and un-stack faster than you think.', time: '30 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=speed+stacking+3+3+3' },
+  { id: 'cup-stacking', name: 'Speed cup stacking, 3-3-3', desc: 'Stack 3 pyramids of 3 cups and un-stack faster than you think.', time: '30 min', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=speed+stacking+3+3+3' },
   { id: 'sign-alphabet', name: 'American Sign Language alphabet', desc: 'Fingerspell A-Z. Foundation for any further ASL.', time: '1 hour', difficulty: 'easy', family: true, tutorial: 'https://www.youtube.com/results?search_query=asl+alphabet+tutorial' },
   { id: 'tongue-twisters', name: 'Master 3 tongue twisters', desc: 'Pad-thai pita / Toy boat / Red leather. Diction and confidence on demand.', time: '1 hour', difficulty: 'easy', tutorial: 'https://www.youtube.com/results?search_query=hardest+tongue+twisters' },
   { id: 'mental-math-squares', name: 'Mental math: 2-digit squares', desc: 'Square any 2-digit number in your head in under 5 seconds.', time: '1 week', difficulty: 'medium', tutorial: 'https://www.youtube.com/results?search_query=mental+math+squaring+two+digit' },
@@ -490,7 +490,7 @@ function getPacingHint() {
   if (weeksLeft === 0) return 'You\\'ve learned them all. Add custom skills to keep going.';
   if (weeksLeft < 10) return `Only ${weeksLeft} weeks of new skills left at this pace. Add some custom ones.`;
   if (weeksLeft < 30) return `${weeksLeft} weeks of skills queued.`;
-  return `${weeksLeft} weeks of skills queued — basically a year of learning.`;
+  return `${weeksLeft} weeks of skills queued, basically a year of learning.`;
 }
 
 function renderThisWeek() {
@@ -512,7 +512,7 @@ function renderThisWeek() {
       <div class="hero-actions">
         <a class="link" href="${skill.tutorial}" target="_blank" rel="noopener">Open tutorial ↗</a>
         <button class="btn btn-good" onclick="markLearned('${skill.id}')">I learned it ✓</button>
-        <button class="btn btn-ghost" onclick="skipWeekly('${skill.id}')">Skip — pick another</button>
+        <button class="btn btn-ghost" onclick="skipWeekly('${skill.id}')">Skip, pick another</button>
       </div>
       <p style="margin:14px 0 0;font-size:12px;color:var(--text-light);">${escapeHtml(getPacingHint())}</p>
     </div>
